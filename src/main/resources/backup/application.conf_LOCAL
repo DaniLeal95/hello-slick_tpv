@@ -1,0 +1,14 @@
+DB = {
+  url = "jdbc:mysql://localhost:3306/v1?serverTimezone=Europe/Madrid"
+  driver = com.mysql.cj.jdbc.Driver
+
+  connectionPool = disabled
+  keepAliveConnection = true
+  properties = {
+    user = "dleal"
+    password = "Dani1995."
+  }
+}
+
+logger.scala.slick=DEBUG
+logger.scala.slick.session=DEBUG

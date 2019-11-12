@@ -1,0 +1,14 @@
+DB = {
+  url = "jdbc:mysql://sql7.freemysqlhosting.net:3306/sql7311673"
+  driver = com.mysql.cj.jdbc.Driver
+
+  connectionPool = disabled
+  keepAliveConnection = true
+  properties = {
+    user = "sql7311673"
+    password = "kRujnZaQ47"
+  }
+}
+
+logger.scala.slick=DEBUG
+logger.scala.slick.session=DEBUG

@@ -7,6 +7,7 @@ import java.sql.Blob
 import com.dleal.caseClass.Persona
 import slick.driver.MySQLDriver
 import slick.lifted.Tag
+import slick.profile.SqlProfile.ColumnOption.Nullable
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration.Duration
@@ -15,7 +16,7 @@ import scala.concurrent.{Await, ExecutionContext}
 class Personas(tag: Tag)
   extends Table[Persona](tag, "Personas") {
 
-  private var _db: Option[MySQLDriver.backend.Database] = None
+  private var _db: Option[Database] = None
   private implicit var _ec: Option[ExecutionContext] = None
 
 
@@ -33,7 +34,7 @@ class Personas(tag: Tag)
 
   def _direccion: Rep[String] = column[String]("direccion")
 
-  def _image: Rep[Blob] = column[Blob]("Image")
+  def _image: Rep[Blob] = column[Blob]("Image", Nullable)
 
 
   // Every table needs a * projection with the same type as the table's type parameter
@@ -43,7 +44,11 @@ class Personas(tag: Tag)
 
 
   private def createConnection(): Unit = {
-    _db = Some(Database.forConfig("mysqlDB"))
+
+
+
+    _db = Some(Database.forConfig(System.getProperty("db_name")))
+//    _db = Some(Database.forConfig(System.getProperty("db_property")))
     _ec = Some(_db.get.executor.executionContext)
   }
 
