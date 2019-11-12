@@ -5,37 +5,35 @@ import java.sql.Date
 import java.sql.Blob
 
 import com.dleal.caseClass.Persona
-import com.dleal.filters.GenericQuery
 import slick.driver.MySQLDriver
-import slick.jdbc.GetResult
-import slick.lifted.{AbstractTable, Tag}
+import slick.lifted.Tag
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext}
 
 class Personas(tag: Tag)
-  extends Table[Persona](tag, "personas") {
+  extends Table[Persona](tag, "Personas") {
 
   private var _db: Option[MySQLDriver.backend.Database] = None
   private implicit var _ec: Option[ExecutionContext] = None
 
 
 
-  val _id_persona: Rep[Int] = column[Int]("id_persona", O.PrimaryKey, O.AutoInc)
+  def _id_persona: Rep[Int] = column[Int]("id_persona", O.PrimaryKey, O.AutoInc)
 
-  val _nombre: Rep[String] = column[String]("nombre")
+  def _nombre: Rep[String] = column[String]("nombre")
 
-  val _primerApellido: Rep[String] = column[String]("primerApellido")
+  def _primerApellido: Rep[String] = column[String]("primerApellido")
 
-  val _segundoApellido: Rep[String] = column[String]("segundoApellido")
+  def _segundoApellido: Rep[String] = column[String]("segundoApellido")
 
-  val _fecha_Nacimiento: Rep[Date] = column[Date]("fecha_Nacimiento") //(DateMapper.utilDate2SqlDate)
-  val _email: Rep[String] = column[String]("email")
+  def _fecha_Nacimiento: Rep[Date] = column[Date]("fecha_Nacimiento") //(DateMapper.utilDate2SqlDate)
+  def _email: Rep[String] = column[String]("email")
 
-  val _direccion: Rep[String] = column[String]("direccion")
+  def _direccion: Rep[String] = column[String]("direccion")
 
-  val _image: Rep[Blob] = column[Blob]("Image")
+  def _image: Rep[Blob] = column[Blob]("Image")
 
 
   // Every table needs a * projection with the same type as the table's type parameter
