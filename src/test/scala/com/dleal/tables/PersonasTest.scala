@@ -95,4 +95,23 @@ class PersonasTest extends FunSuite with BeforeAndAfterAll  with ScalaFutures wi
   }
 
 
+  test("testUpdate") {
+    var person = Persona(Some(0), Some("Daniel"), Some("Leal"), Some("Reyes"), Some(new Date(System.currentTimeMillis())),
+      Some("CA"), Some("95199"), None)
+
+    person = Await.result(personas.insertOne(person),Duration.Inf)
+
+    println(person)
+
+    person = person.copy(nombre = Some("SJRAHRIAHRI"))
+
+    person = Await.result(personas.update(person),Duration.Inf).get
+
+    println(person)
+
+
+
+  }
+
+
 }

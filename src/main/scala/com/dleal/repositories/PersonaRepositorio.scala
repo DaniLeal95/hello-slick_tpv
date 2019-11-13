@@ -111,4 +111,21 @@ class PersonaRepositorio (val config: DatabaseConfig[JdbcProfile])
       listaPersona
     } /*finally closeConnection()*/
   }
+
+
+  /*
+  * Update
+  * */
+  def update(person: Persona ) = {
+
+    val query = for (persona <- personas if persona._id_persona == person.id_persona)
+      yield persona
+
+    db.run(query.update(person))
+      .map{
+        case 0 => None
+        case _ => Some(person)
+      }
+  }
+
 }

@@ -9,7 +9,8 @@ libraryDependencies ++= List(
   "com.h2database" % "h2" % "1.4.187",
   "mysql" % "mysql-connector-java" % "8.0.16",
   "org.scalatest" %% "scalatest" % "2.2.4" % "test",
-  "com.typesafe.slick" %% "slick-hikaricp" % "3.1.0-M2"
+  "com.typesafe.slick" %% "slick-hikaricp" % "3.1.0-M2",
+  "com.typesafe.slick" %% "slick-codegen" % "3.0.0"
 )
 
 fork in run := true
