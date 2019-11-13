@@ -1,50 +1,51 @@
 package com.dleal.tables
 
+import java.io.File
 import java.sql.Date
 
 import com.dleal.caseClass.Persona
+import com.dleal.repositories.PersonaRepositorio
+import com.dleal.util.DbConfiguration
+import com.typesafe.config.ConfigFactory
+import javax.sql.DataSource
+import org.h2.Driver
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{BeforeAndAfterAll, FunSuite}
-import slick.driver.MySQLDriver
+import slick.driver.{H2Driver, JdbcProfile, MySQLDriver}
 import org.scalatest._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Seconds, Span}
+import slick.backend.DatabaseConfig
 import slick.driver.H2Driver.api._
-import slick.jdbc.meta._
+import slick.jdbc.JdbcBackend
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
 
-class PersonasTest extends FunSuite with BeforeAndAfterAll  with ScalaFutures{
+class PersonasTest extends FunSuite with BeforeAndAfterAll  with ScalaFutures with DbConfiguration{
+
   implicit override val patienceConfig = PatienceConfig(timeout = Span(5, Seconds))
-  var db: Database = _
-  val personTable = TableQuery[Personas]
+  System.setProperty("db_name", "db")
+  System.setProperty("db_config", "src/test/resources/application.conf")
+  val personas = new PersonaRepositorio(config)
 
 
   override protected def beforeAll(){
 
     println("BEFORE ALL")
     // let's use test configurations (should use the application.test.conf settings)
-    db = Database.forConfig("Dbmemory")
-    db.createSession()
-    db.run(personTable.schema.create).futureValue
-    System.setProperty("db_name", "Dbmemory")
-
-
-
-
-
+    Await.result(personas.init(),Duration.Inf)
   }
 
   override protected def afterAll(){
     println("AFTER ALL")
-    db.close()
+    personas.drop()
   }
 
 
-  def insertOne(person: Persona, single: Boolean = true): Persona = {
+  /*def insertOne(person: Persona, single: Boolean = true): Persona = {
     val _ec = Some(db.executor.executionContext)
 
     try {
@@ -73,26 +74,19 @@ class PersonasTest extends FunSuite with BeforeAndAfterAll  with ScalaFutures{
     }
 
   }
-
+*/
   test("testInsertOne") {
-
-    val t: slick.lifted.Tag = null
-    val personasTable = new Personas(t)
-
     var person = Persona(Some(0), Some("Dylan"), Some("ES CARAJOTE"), Some("ESA"), Some(new Date(System.currentTimeMillis())),
       Some("CA"), Some("95199"), None)
 
-
-    person = insertOne(person)
+    person = Await.result(personas.insertOne(person),Duration.Inf)
 
     assert(person.id_persona.isDefined)
     assert(person.id_persona.get > 0)
+    println(person)
   }
 
   test("testInsertVarious") {
-
-    val t: slick.lifted.Tag = null
-    val personasTable = new Personas(t)
 
     var listBuffer: ListBuffer[Persona] = ListBuffer()
     for(i <- 1 to 10){
@@ -100,7 +94,7 @@ class PersonasTest extends FunSuite with BeforeAndAfterAll  with ScalaFutures{
         Some("CA"), Some(i.toString), None)
     }
 
-    listBuffer = personasTable.insertMultiple(listBuffer)
+    listBuffer = personas.insertMultiple(listBuffer)
 
     listBuffer.foreach(x => {
       assert(x.id_persona.isDefined)
@@ -110,12 +104,7 @@ class PersonasTest extends FunSuite with BeforeAndAfterAll  with ScalaFutures{
   }
 
   test("testSelectAll") {
-
-    val t: slick.lifted.Tag = null
-    val personasTable = new Personas(t)
-
-    val allTable : ListBuffer[Persona] = personasTable.selectAll()
-
+    val allTable : ListBuffer[Persona] = personas.selectAll()
 
     assert(allTable.size > 0)
 
@@ -123,11 +112,7 @@ class PersonasTest extends FunSuite with BeforeAndAfterAll  with ScalaFutures{
   }
 
   test("testSelectOne") {
-
-    val t: slick.lifted.Tag = null
-    val personasTable = new Personas(t)
-
-    val person : Option[Persona] = personasTable.selectOne(1)
+    val person : Option[Persona] = personas.selectOne(1)
 
 
     assert(person.isDefined)
@@ -138,18 +123,15 @@ class PersonasTest extends FunSuite with BeforeAndAfterAll  with ScalaFutures{
   }
 
   test("testFind") {
-    val t: slick.lifted.Tag = null
-    val personasTable = new Personas(t)
-
-    val persona = personasTable.find(Persona(None, Some("Dylan"), Some("ES CARAJOTE"), Some("ESA"),None,
+    val persona = personas.find(Persona(None, Some("Dylan"), Some("ES CARAJOTE"), Some("ESA"),None,
       Some("CA"), Some("95199"), None))
 
     assert(persona.size == 1)
 
-    val personas = personasTable.find(Persona(None, None, None,None,None,
+    val personasList = personas.find(Persona(None, None, None,None,None,
       Some("CA"),None, None))
 
-    assert(personas.size > 1)
+    assert(personasList.size > 1)
   }
 
 
