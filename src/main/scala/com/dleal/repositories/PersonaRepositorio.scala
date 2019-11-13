@@ -118,14 +118,18 @@ class PersonaRepositorio (val config: DatabaseConfig[JdbcProfile])
   * */
   def update(person: Persona ) = {
 
-    val query = for (persona <- personas if persona._id_persona == person.id_persona)
-      yield persona
+    var personaAActualizar :Option[Persona] = None
 
-    db.run(query.update(person))
+    Await.result(db.run(personas.filter(_._id_persona === person.id_persona)
       .map{
-        case 0 => None
-        case _ => Some(person)
+        encontrado => {
+          personaAActualizar = Some(Persona(person.id_persona,Some(person.nombre.getOrElse(encontrado._nombre)),Some(person.primerApellido.getOrElse(encontrado._primerApellido)),Some(person.segundoApellido.getOrElse(encontrado._segundoApellido)),
+            Some(person.fecha_Nacimiento.getOrElse(encontrado._fecha_Nacimiento)),Some(person.email.getOrElse(encontrado._email)),Some(person.direccion.getOrElse(encontrado._direccion)),Some(person.image.getOrElse(encontrado._image))))
+        }
       }
+      .update(personaAActualizar.get)),Duration.Inf)
+
+
   }
 
 }

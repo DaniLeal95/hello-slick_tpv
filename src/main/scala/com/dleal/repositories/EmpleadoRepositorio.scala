@@ -11,7 +11,6 @@ class EmpleadoRepositorio (val config: DatabaseConfig[JdbcProfile])
 
 
   import config.driver.api._
-/*
   import scala.concurrent.ExecutionContext.Implicits.global
 
   def init() = {
@@ -23,7 +22,6 @@ class EmpleadoRepositorio (val config: DatabaseConfig[JdbcProfile])
     db.run(DBIOAction.seq(personas.schema.drop))
     db.run(DBIOAction.seq(empleados.schema.drop))
   }
-*/
 
 
 }
