@@ -1,23 +1,14 @@
 package com.dleal.tables
 
-import java.io.File
+
 import java.sql.Date
 
 import com.dleal.caseClass.Persona
 import com.dleal.repositories.PersonaRepositorio
 import com.dleal.util.DbConfiguration
-import com.typesafe.config.ConfigFactory
-import javax.sql.DataSource
-import org.h2.Driver
-import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{BeforeAndAfterAll, FunSuite}
-import slick.driver.{H2Driver, JdbcProfile, MySQLDriver}
-import org.scalatest._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Seconds, Span}
-import slick.backend.DatabaseConfig
-import slick.driver.H2Driver.api._
-import slick.jdbc.JdbcBackend
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.Await
@@ -44,39 +35,8 @@ class PersonasTest extends FunSuite with BeforeAndAfterAll  with ScalaFutures wi
     personas.drop()
   }
 
-
-  /*def insertOne(person: Persona, single: Boolean = true): Persona = {
-    val _ec = Some(db.executor.executionContext)
-
-    try {
-      val personas: TableQuery[Personas] = TableQuery[Personas]
-      val insertQuery = personas returning personas.map(_._id_persona) into ((item, id) => item.copy(id_persona = Some(id)))
-      val action = insertQuery += person
-      val personReturn: Persona = Await.result(db.run(action).map {
-        _ match {
-          case x: Persona => x
-          case _ => Persona.apply(None, None, None, None, None, None, None, None)
-        }
-      }(_ec.get).recover {
-        case e: java.sql.SQLException => {
-          println(e)
-          Persona.apply(None, None, None, None, None, None, None, None)
-        }
-      }(_ec.get), Duration.Inf)
-
-      personReturn
-    }
-    catch {
-      case e: Exception => {
-        println(e)
-        Persona.apply(None, None, None, None, None, None, None, None)
-      }
-    }
-
-  }
-*/
   test("testInsertOne") {
-    var person = Persona(Some(0), Some("Dylan"), Some("ES CARAJOTE"), Some("ESA"), Some(new Date(System.currentTimeMillis())),
+    var person = Persona(Some(0), Some("Daniel"), Some("Leal"), Some("Reyes"), Some(new Date(System.currentTimeMillis())),
       Some("CA"), Some("95199"), None)
 
     person = Await.result(personas.insertOne(person),Duration.Inf)
@@ -123,8 +83,8 @@ class PersonasTest extends FunSuite with BeforeAndAfterAll  with ScalaFutures wi
   }
 
   test("testFind") {
-    val persona = personas.find(Persona(None, Some("Dylan"), Some("ES CARAJOTE"), Some("ESA"),None,
-      Some("CA"), Some("95199"), None))
+    val persona = personas.find(Persona(None, Some("Daniel"),None, None,None,
+      None, None, None))
 
     assert(persona.size == 1)
 
