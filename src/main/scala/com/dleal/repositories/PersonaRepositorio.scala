@@ -112,8 +112,7 @@ class PersonaRepositorio (val config: DatabaseConfig[JdbcProfile])
   * Update
   * */
   def update(person: Persona ): Int = {
-    Await.result(db.run(personas.filter(_._id_persona === person.id_persona)
-      .update(person)),Duration.Inf)
+    Await.result(db.run(personas.update(person)),Duration.Inf)
   }
 
 

@@ -43,7 +43,7 @@ class PersonasTest extends FunSuite with BeforeAndAfterAll  with ScalaFutures wi
 
     assert(person.id_persona.isDefined)
     assert(person.id_persona.get > 0)
-    println(person)
+//    println(person)
   }
 
   test("testInsertVarious") {
@@ -68,7 +68,7 @@ class PersonasTest extends FunSuite with BeforeAndAfterAll  with ScalaFutures wi
 
     assert(allTable.size > 0)
 
-    allTable.foreach(println)
+//    allTable.foreach(println)
   }
 
   test("testSelectOne") {
@@ -77,7 +77,7 @@ class PersonasTest extends FunSuite with BeforeAndAfterAll  with ScalaFutures wi
 
     assert(person.isDefined)
     assert(person.get.nombre.getOrElse("").equals("Daniel"))
-    println(person)
+//    println(person)
 
 
   }

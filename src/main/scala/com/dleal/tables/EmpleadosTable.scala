@@ -1,6 +1,7 @@
 package com.dleal.tables
 
-import java.sql.Date
+import java.sql.{Date, Timestamp}
+import java.time.LocalDateTime
 
 import com.dleal.caseClass.Empleado
 import com.dleal.util.Db
@@ -14,8 +15,8 @@ trait EmpleadosTable extends PersonasTable { this: Db =>
 
     //Columns
     def _id_empleado : Rep[Int] = column[Int]("id_empleado", O.PrimaryKey, O.AutoInc)
-    def _f_creacion: Rep[Date] = column[Date]("d_startDate", O.Default(new Date(System.currentTimeMillis())),Nullable)
-    def _f_eliminacion: Rep[Date] = column[Date]("d_endDate",Nullable)
+    def _f_creacion: Rep[Timestamp] = column[Timestamp]("d_startDate", O.Default(Timestamp.valueOf(LocalDateTime.now())),Nullable)
+    def _f_eliminacion: Rep[Timestamp] = column[Timestamp]("d_endDate",Nullable)
 
     // Foreign Key
     def _id_persona: Rep[Int] = column[Int] ("id_persona", NotNull)
