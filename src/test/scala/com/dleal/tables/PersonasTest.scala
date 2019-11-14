@@ -39,7 +39,7 @@ class PersonasTest extends FunSuite with BeforeAndAfterAll  with ScalaFutures wi
     var person = Persona(Some(0), Some("Daniel"), Some("Leal"), Some("Reyes"), Some(new Date(System.currentTimeMillis())),
       Some("CA"), Some("95199"), None)
 
-    person = Await.result(personas.insertOne(person),Duration.Inf)
+    person = personas.insertOne(person)
 
     assert(person.id_persona.isDefined)
     assert(person.id_persona.get > 0)
@@ -99,19 +99,37 @@ class PersonasTest extends FunSuite with BeforeAndAfterAll  with ScalaFutures wi
     var person = Persona(Some(0), Some("Daniel"), Some("Leal"), Some("Reyes"), Some(new Date(System.currentTimeMillis())),
       Some("CA"), Some("95199"), None)
 
-    person = Await.result(personas.insertOne(person),Duration.Inf)
+    person = personas.insertOne(person)
 
-    println(person)
-
-    val person2 = new Persona(Some(1),Some("JIFSAJIFJSA"),None,None,None,None,None,None)
+    val person2 = person.copy(nombre = Some("SRAISRI"))
 
     val x = personas.update(person2)
 
-    println(person)
+    person = personas.selectOne(person2.id_persona.get).get
+
+    assert(person.nombre == person2.nombre)
+    assert(x > 0)
+  }
+
+  test( "testDelete"){
+
+    var person = Persona(Some(0), Some("Daniel"), Some("Leal"), Some("Reyes"), Some(new Date(System.currentTimeMillis())),
+      Some("CA"), Some("95199"), None)
+    person = personas.insertOne(person)
+
+    val x = personas.delete(person.id_persona.get)
+
+    assert( x > 0) // 0 Failure , >0 Success
+
+    val get = personas.selectOne(person.id_persona.get)
+
+    assert(get == None)
 
 
 
   }
+
+
 
 
 }

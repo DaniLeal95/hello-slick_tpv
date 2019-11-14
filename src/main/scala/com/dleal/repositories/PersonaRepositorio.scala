@@ -26,9 +26,8 @@ class PersonaRepositorio (val config: DatabaseConfig[JdbcProfile])
   /*
    * Insert Function : Insert One Person
    * */
-  def insertOne(person: Persona, single: Boolean = true) = {
-    //      if (single) createConnection()
-    db.run(personas returning personas.map(_._id_persona) += person).map( id => person.copy(id_persona = Some(id)))
+  def insertOne(person: Persona, single: Boolean = true):Persona = {
+    Await.result(db.run(personas returning personas.map(_._id_persona) += person).map( id => person.copy(id_persona = Some(id))),Duration.Inf)
   }
 
   /*
@@ -37,13 +36,9 @@ class PersonaRepositorio (val config: DatabaseConfig[JdbcProfile])
   def insertMultiple(person: ListBuffer[Persona]): ListBuffer[Persona] = {
 
     val bufferAux: ListBuffer[Persona] = ListBuffer()
-    //      createConnection()
-
     person.foreach(p => {
-      bufferAux += Await.result(insertOne(p, single = false), Duration.Inf)
+      bufferAux += insertOne(p, single = false)
     })
-
-    //      closeConnection()
     bufferAux
   }
 
@@ -116,20 +111,17 @@ class PersonaRepositorio (val config: DatabaseConfig[JdbcProfile])
   /*
   * Update
   * */
-  def update(person: Persona ) = {
-
-    var personaAActualizar :Option[Persona] = None
-
+  def update(person: Persona ): Int = {
     Await.result(db.run(personas.filter(_._id_persona === person.id_persona)
-      .map{
-        encontrado => {
-          personaAActualizar = Some(Persona(person.id_persona,Some(person.nombre.getOrElse(encontrado._nombre)),Some(person.primerApellido.getOrElse(encontrado._primerApellido)),Some(person.segundoApellido.getOrElse(encontrado._segundoApellido)),
-            Some(person.fecha_Nacimiento.getOrElse(encontrado._fecha_Nacimiento)),Some(person.email.getOrElse(encontrado._email)),Some(person.direccion.getOrElse(encontrado._direccion)),Some(person.image.getOrElse(encontrado._image))))
-        }
-      }
-      .update(personaAActualizar.get)),Duration.Inf)
+      .update(person)),Duration.Inf)
+  }
 
 
+  /*
+  * Delete
+   */
+  def delete(idPersona: Int) = {
+    Await.result(db.run(personas.filter(_._id_persona === idPersona).delete),Duration.Inf)
   }
 
 }

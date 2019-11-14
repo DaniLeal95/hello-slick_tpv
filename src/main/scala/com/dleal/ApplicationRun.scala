@@ -44,7 +44,7 @@ object ApplicationRun extends App with DbConfiguration {
   val direccion = Console.readLine()
 
   var persona: Persona = new Persona(None,Some(nombre_persona),Some(primer_apellido_persona),Some(segundo_apellido_persona),Some(new Date(System.currentTimeMillis())),Some(email),Some(direccion),None)
-  persona = Await.result(personas.insertOne(persona), Duration.Inf)
+  persona = personas.insertOne(persona)
 
   println()
   println("Ha guardado esta persona: " + persona)
