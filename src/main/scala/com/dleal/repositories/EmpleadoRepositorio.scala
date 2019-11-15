@@ -3,28 +3,28 @@ package com.dleal.repositories
 import com.dleal.caseClass.Empleado
 import com.dleal.tables.EmpleadosTable
 import com.dleal.util.Db
+import org.h2.jdbc.JdbcSQLException
 import slick.backend.DatabaseConfig
 import slick.dbio.DBIOAction
 import slick.driver.JdbcProfile
 
 import scala.collection.mutable.ListBuffer
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
 
 class EmpleadoRepositorio (val config: DatabaseConfig[JdbcProfile])
   extends Db with EmpleadosTable{
 
-  import config.driver.api._
   import scala.concurrent.ExecutionContext.Implicits.global
 
   import config.driver.api._
 
-  def init() = {
+  def init(): Future[Unit] = {
     Await.result(db.run(DBIOAction.seq(personas.schema.create)),Duration.Inf)
     db.run(DBIOAction.seq(empleados.schema.create))
 
   }
-  def drop() = {
+  def drop(): Future[Unit] = {
     db.run(DBIOAction.seq(personas.schema.drop))
     db.run(DBIOAction.seq(empleados.schema.drop))
   }
@@ -32,8 +32,13 @@ class EmpleadoRepositorio (val config: DatabaseConfig[JdbcProfile])
 /*
 * Insert one Employee
  */
-  def insertOne(empleado: Empleado):Empleado = {
-    Await.result(db.run(empleados returning empleados.map(_._id_empleado) += empleado).map( id => empleado.copy(id_empleado = Some(id))),Duration.Inf)
+  def insertOne(empleado: Empleado): Empleado = {
+    try {
+      Await.result(db.run(empleados returning empleados.map(_._id_empleado) += empleado).map(id => empleado.copy(id_empleado = Some(id))), Duration.Inf)
+    }
+    catch {
+      case jdbcSQLException: JdbcSQLException =>  jdbcSQLException.printStackTrace();  empleado
+    }
   }
 
   /*
@@ -97,7 +102,12 @@ class EmpleadoRepositorio (val config: DatabaseConfig[JdbcProfile])
    */
 
   def update( empleado: Empleado): Int = {
-    Await.result(db.run(empleados.update(empleado)),Duration.Inf)
+//    try{
+      Await.result(db.run(empleados.filter(_._id_empleado === empleado.id_empleado).update(empleado)),Duration.Inf)
+//    }
+//    catch {
+//      case jdbcSQLException: JdbcSQLException =>  jdbcSQLException.printStackTrace(); 0
+//    }
   }
 
   /*

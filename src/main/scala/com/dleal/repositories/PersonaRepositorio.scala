@@ -3,6 +3,7 @@ package com.dleal.repositories
 import com.dleal.caseClass.Persona
 import com.dleal.tables.PersonasTable
 import com.dleal.util.Db
+import org.h2.jdbc.JdbcSQLException
 import slick.backend.DatabaseConfig
 import slick.dbio.DBIOAction
 import slick.driver.JdbcProfile
@@ -20,8 +21,8 @@ class PersonaRepositorio (val config: DatabaseConfig[JdbcProfile])
   import scala.concurrent.ExecutionContext.Implicits.global
 
 
-  def init() = db.run(DBIOAction.seq(personas.schema.create))
-  def drop() = db.run(DBIOAction.seq(personas.schema.drop))
+  def init(): Future[Unit] = db.run(DBIOAction.seq(personas.schema.create))
+  def drop(): Future[Unit] = db.run(DBIOAction.seq(personas.schema.drop))
 
   /*
    * Insert Function : Insert One Person
@@ -112,15 +113,25 @@ class PersonaRepositorio (val config: DatabaseConfig[JdbcProfile])
   * Update
   * */
   def update(person: Persona ): Int = {
-    Await.result(db.run(personas.update(person)),Duration.Inf)
+    try{
+      Await.result(db.run(personas.filter(_._id_persona === person.id_persona).update(person)),Duration.Inf)
+    } catch {
+      case jdbcSQLException: JdbcSQLException => jdbcSQLException.printStackTrace();  0
+    }
   }
 
 
   /*
   * Delete
    */
-  def delete(idPersona: Int) = {
-    Await.result(db.run(personas.filter(_._id_persona === idPersona).delete),Duration.Inf)
+  def delete(idPersona: Int): Int = {
+
+    try{
+      Await.result(db.run(personas.filter(_._id_persona === idPersona).delete),Duration.Inf)
+    }
+    catch {
+      case jdbcSQLException: JdbcSQLException =>  jdbcSQLException.printStackTrace();  0
+    }
   }
 
 }

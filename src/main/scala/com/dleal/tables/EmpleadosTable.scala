@@ -25,7 +25,7 @@ trait EmpleadosTable extends PersonasTable { this: Db =>
     /** Maps whole row to an option. Useful for outer joins. */
     def ? = (Rep.Some(_id_empleado), Rep.Some(_id_persona), Rep.Some(_f_creacion), Rep.Some(_f_eliminacion)).shaped.<>({r=>import r._; _1.map(_=> Empleado.tupled((_1, _2, _3, _4)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
 
-    def _persona = foreignKey("PERSONA_FK", _id_persona,personas )(_._id_persona, ForeignKeyAction.NoAction,ForeignKeyAction.Cascade)
+    def _persona = foreignKey("Empleados_ibfk_1", _id_persona,personas )(_._id_persona,ForeignKeyAction.Cascade,ForeignKeyAction.Cascade)
 
 
 

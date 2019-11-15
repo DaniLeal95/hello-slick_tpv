@@ -17,7 +17,9 @@ import scala.concurrent.duration.Duration
 class EmpleadosTest  extends FunSuite with BeforeAndAfterAll  with ScalaFutures with DbConfiguration
 {
   implicit override val patienceConfig = PatienceConfig(timeout = Span(5, Seconds))
+
   System.setProperty("db_name", "db")
+
   System.setProperty("db_config", "src/test/resources/application.conf")
 
   val empleados = new EmpleadoRepositorio(config)
@@ -31,7 +33,7 @@ class EmpleadosTest  extends FunSuite with BeforeAndAfterAll  with ScalaFutures 
 
   override protected def afterAll(){
     println("AFTER ALL")
-    empleados.drop()
+    Await.result(empleados.drop(), Duration.Inf)
   }
 
   test("testInsert") {
@@ -63,11 +65,10 @@ class EmpleadosTest  extends FunSuite with BeforeAndAfterAll  with ScalaFutures 
 
     bufferAuxEmployee.foreach( f => {
       assert(f.id_empleado.isDefined)
-      println(f)
+//      println(f)
     })
 
   }
-
 
   test("deleteOnCascadeTest") {
     var person = Persona(Some(0), Some("Daniel"), Some("Leal"), Some("Reyes"), Some(new Date(System.currentTimeMillis())),
@@ -101,6 +102,47 @@ class EmpleadosTest  extends FunSuite with BeforeAndAfterAll  with ScalaFutures 
 
     assert(empleado2.isEmpty)
     assert(x > 0)
+  }
+
+  test( "updateTest"){
+    var person = Persona(Some(0), Some("Daniel"), Some("Leal"), Some("Reyes"), Some(new Date(System.currentTimeMillis())),
+      Some("CA"), Some("95199"), None)
+
+    person = personas.insertOne(person)
+
+    var person2 = Persona(Some(0), Some("Rafael"), Some("Leal"), Some("Reyes"), Some(new Date(System.currentTimeMillis())),
+      Some("CA"), Some("95199"), None)
+
+    person2 = personas.insertOne(person2)
+
+    var empleado: Empleado = Empleado(None,person.id_persona,Some(Timestamp.valueOf(LocalDateTime.now())),None)
+    empleado = empleados.insertOne(empleado)
+
+
+    assert(empleado.id_persona.isDefined)
+
+
+    val x: Int = empleados.update(empleado.copy(id_persona = person2.id_persona))
+    val empleado2 = empleados.selectOne(empleado.id_empleado.get).get
+
+    assert(x > 0)
+    assert(empleado.id_persona !== empleado2.id_persona)
+    assert(empleado2.id_persona === person2.id_persona)
+  }
+
+  test("InsertFailureTest"){
+
+
+    var empleado: Empleado = Empleado(None,Some(60),Some(Timestamp.valueOf(LocalDateTime.now())),None)
+    empleado = empleados.insertOne(empleado)
+    assert(empleado.id_empleado.isEmpty)
+
+  }
+
+  test( "selectFailureTest"){
+    var empleado: Option[Empleado] = empleados.selectOne(60)
+
+    assert(empleado.isEmpty)
   }
 
 }
