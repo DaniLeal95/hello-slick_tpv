@@ -3,8 +3,8 @@ package com.dleal
 import java.sql.{Date, Timestamp}
 import java.time.LocalDateTime
 
-import com.dleal.caseClass.{Empleado, Persona}
-import com.dleal.repositories.{EmpleadoRepositorio, PersonaRepositorio}
+import com.dleal.caseClass.{Cliente, Empleado, Persona}
+import com.dleal.repositories.{ClienteRepositorio, EmpleadoRepositorio, PersonaRepositorio}
 import com.dleal.util.DbConfiguration
 
 import scala.concurrent.Await
@@ -17,6 +17,7 @@ object ApplicationRun extends App with DbConfiguration {
 
   val personas = new PersonaRepositorio(config)
   val empleados = new EmpleadoRepositorio(config)
+  val clientes = new ClienteRepositorio(config)
 
   println("*********************")
   println("*********************")
@@ -25,6 +26,11 @@ object ApplicationRun extends App with DbConfiguration {
   println("*********************")
 
   println();println();println()
+
+  println()
+  println("Es un empleado(E) o un cliente(C)")
+  val clienteoEmpleado = Console.readChar()
+
 
   println("Introduzca el nombre de la persona")
   val nombre_persona = Console.readLine()
@@ -48,11 +54,21 @@ object ApplicationRun extends App with DbConfiguration {
   var persona: Persona = Persona(None,Some(nombre_persona),Some(primer_apellido_persona),Some(segundo_apellido_persona),Some(new Date(System.currentTimeMillis())),Some(email),Some(direccion),None)
   persona = personas.insertOne(persona)
 
-  var empleado: Empleado = Empleado ( None, persona.id_persona, Some(Timestamp.valueOf(LocalDateTime.now())),None)
-  empleado = empleados.insertOne(empleado)
   println()
   println("Ha guardado esta persona: " + persona)
-  println("Ha guardado este empleado: " + empleado)
+
+
+  if (clienteoEmpleado.equals('E')) {
+    var empleado: Empleado = Empleado(None, persona.id_persona, Some(Timestamp.valueOf(LocalDateTime.now())), None)
+    empleado = empleados.insertOne(empleado)
+    println("Ha guardado este empleado: " + empleado)
+  }else{
+    var cliente: Cliente= Cliente(None, persona.id_persona, Some(Timestamp.valueOf(LocalDateTime.now())), None)
+    cliente = clientes.insertOne(cliente)
+    println("Ha guardado este cliente: " + cliente)
+  }
+
+
 
 
 
