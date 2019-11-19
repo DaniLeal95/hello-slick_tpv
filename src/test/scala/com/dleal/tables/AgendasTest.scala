@@ -99,7 +99,27 @@ class AgendasTest extends FunSuite with BeforeAndAfterAll  with ScalaFutures wit
   }
 
 
-  test ("")
+  test ("testSelectById") {
+    var person = Persona(Some(0), Some("Daniel"), Some("Leal"), Some("Reyes"), Some(new Date(System.currentTimeMillis())),
+      Some("CA"), Some("95199"), None)
+
+    person = personas.insertOne(person)
+
+    var empleado: Empleado = Empleado(None,person.id_persona,Some(Timestamp.valueOf(LocalDateTime.now())),None)
+    empleado = empleados.insertOne(empleado)
+
+    var agenda: Agenda = Agenda(None,empleado.id_empleado,Some(getTimeStamp("2019-11-20 17:00:00")),Some(getTimeStamp("2019-11-20 17:30:00")),Some('A'),
+      Some("Pelar a Menganito"),None,Some(Timestamp.valueOf(LocalDateTime.now())))
+
+    agenda = agendas.insertOne(agenda)
+
+    val agenda2: Option[Agenda] = agendas.selectOne(agenda.id_tarea.get)
+
+    assert(agenda2.isDefined)
+    assert(agenda.fecha_creacion === agenda2.get.fecha_creacion)
+  }
+
+
 
 }
 
