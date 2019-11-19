@@ -5,7 +5,8 @@ import java.time.LocalDateTime
 
 import com.dleal.caseClass.{Cliente, Persona}
 import com.dleal.repositories.{ClienteRepositorio, PersonaRepositorio}
-import com.dleal.util.DbConfiguration
+import com.dleal.util.{DbConfiguration, ParametersName}
+import org.h2.jdbc.JdbcSQLException
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Seconds, Span}
 import org.scalatest.{BeforeAndAfterAll, FunSuite}
@@ -18,9 +19,8 @@ class ClientesTest  extends FunSuite with BeforeAndAfterAll  with ScalaFutures w
 {
   implicit override val patienceConfig = PatienceConfig(timeout = Span(5, Seconds))
 
-  System.setProperty("db_name", "db")
-
-  System.setProperty("db_config", "src/test/resources/application.conf")
+  System.setProperty("db_name", ParametersName.testConfDb)
+  System.setProperty("db_config", ParametersName.testConfFile)
 
   val clientes = new ClienteRepositorio(config)
   val personas = new PersonaRepositorio(config)
@@ -130,19 +130,27 @@ class ClientesTest  extends FunSuite with BeforeAndAfterAll  with ScalaFutures w
     assert(empleado2.id_persona === person2.id_persona)
   }
 
-  test("InsertFailureTest"){
+  test("InsertFailureTest") {
 
+    try {
+      var empleado: Cliente = Cliente(None, Some(60), Some(Timestamp.valueOf(LocalDateTime.now())), None)
+      empleado = clientes.insertOne(empleado)
+      assert(empleado.id_cliente.isEmpty)
+    }
+    catch {
+      case except :JdbcSQLException => None
+    }
 
-    var empleado: Cliente = Cliente(None,Some(60),Some(Timestamp.valueOf(LocalDateTime.now())),None)
-    empleado = clientes.insertOne(empleado)
-    assert(empleado.id_cliente.isEmpty)
 
   }
 
   test( "selectFailureTest"){
     var empleado: Option[Cliente] = clientes.selectOne(60)
-
+    try {
     assert(empleado.isEmpty)
+    } catch {
+      case except :JdbcSQLException => None
+    }
   }
 
 }

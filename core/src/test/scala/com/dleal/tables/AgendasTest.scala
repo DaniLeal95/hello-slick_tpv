@@ -7,7 +7,7 @@ import java.util.TimeZone
 
 import com.dleal.caseClass.{Agenda, Empleado, Persona}
 import com.dleal.repositories.{AgendaRepositorio, EmpleadoRepositorio, PersonaRepositorio}
-import com.dleal.util.DbConfiguration
+import com.dleal.util.{DbConfiguration, ParametersName}
 import org.scalatest.{BeforeAndAfterAll, FunSuite}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Seconds, Span}
@@ -20,9 +20,9 @@ class AgendasTest extends FunSuite with BeforeAndAfterAll  with ScalaFutures wit
 {
   implicit override val patienceConfig = PatienceConfig(timeout = Span(5, Seconds))
 
-  System.setProperty("db_name", "db")
+  System.setProperty("db_name", ParametersName.testConfDb)
+  System.setProperty("db_config", ParametersName.testConfFile)
 
-  System.setProperty("db_config", "src/test/resources/application.conf")
   val empleados = new EmpleadoRepositorio(config)
   val personas = new PersonaRepositorio(config)
   val agendas = new AgendaRepositorio(config)

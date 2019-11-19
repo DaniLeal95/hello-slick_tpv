@@ -1,11 +1,10 @@
 package com.dleal.tables
 
-
 import java.sql.Date
 
 import com.dleal.caseClass.Persona
 import com.dleal.repositories.PersonaRepositorio
-import com.dleal.util.DbConfiguration
+import com.dleal.util.{DbConfiguration, ParametersName}
 import org.scalatest.{BeforeAndAfterAll, FunSuite}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Seconds, Span}
@@ -18,10 +17,11 @@ import scala.concurrent.duration.Duration
 class PersonasTest extends FunSuite with BeforeAndAfterAll  with ScalaFutures with DbConfiguration{
 
   implicit override val patienceConfig = PatienceConfig(timeout = Span(5, Seconds))
-  System.setProperty("db_name", "db")
-  System.setProperty("db_config", "src/test/resources/application.conf")
-  val personas = new PersonaRepositorio(config)
 
+  System.setProperty("db_name", ParametersName.testConfDb)
+  System.setProperty("db_config", ParametersName.testConfFile)
+
+  val personas = new PersonaRepositorio(config)
 
   override protected def beforeAll(){
 

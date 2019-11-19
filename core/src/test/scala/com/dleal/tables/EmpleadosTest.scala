@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 
 import com.dleal.caseClass.{Empleado, Persona}
 import com.dleal.repositories.{EmpleadoRepositorio, PersonaRepositorio}
-import com.dleal.util.DbConfiguration
+import com.dleal.util.{DbConfiguration, ParametersName}
 import org.scalatest.{BeforeAndAfterAll, FunSuite}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Seconds, Span}
@@ -18,9 +18,8 @@ class EmpleadosTest  extends FunSuite with BeforeAndAfterAll  with ScalaFutures 
 {
   implicit override val patienceConfig = PatienceConfig(timeout = Span(5, Seconds))
 
-  System.setProperty("db_name", "db")
-
-  System.setProperty("db_config", "src/test/resources/application.conf")
+  System.setProperty("db_name", ParametersName.testConfDb)
+  System.setProperty("db_config", ParametersName.testConfFile)
 
   val empleados = new EmpleadoRepositorio(config)
   val personas = new PersonaRepositorio(config)
