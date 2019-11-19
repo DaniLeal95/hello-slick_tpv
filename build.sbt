@@ -2,7 +2,40 @@ name := "hello-slick"
 
 mainClass in Compile := Some("HelloSlick")
 
-libraryDependencies ++= List(
+lazy val global = project
+  .in(file("."))
+  .aggregate(
+    core,
+    business,
+    view
+  )
+
+lazy val core = project
+  .settings(
+    name := "core",
+    libraryDependencies ++= commonDependencies
+  )
+
+
+lazy val business = project
+  .settings(
+    name := "business",
+    libraryDependencies ++= commonDependencies
+  )
+  .dependsOn(
+    core
+  )
+
+lazy val view = project
+  .settings(
+    name := "view",
+    libraryDependencies ++= commonDependencies
+  )
+  .dependsOn(
+    business
+  )
+
+lazy val commonDependencies = Seq(
   "com.typesafe.slick" %% "slick" % "3.1.1",
   "com.typesafe.slick" %% "slick-testkit" % "3.1.1" % "test" ,
   "org.slf4j" % "slf4j-nop" % "1.7.10",
@@ -14,3 +47,4 @@ libraryDependencies ++= List(
 )
 
 fork in run := true
+
